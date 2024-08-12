@@ -56,3 +56,23 @@ class MortgagePaymentSchedule():
     @property 
     def total_interest_pct(self):
         return self.total_interest / self.initial_amount * 100.
+
+
+def optimal_term_for_target_monthly_repayment(initial_amount: float, interest_pct_annual: float, target_monthly_repayment: float, max_years: int=25):
+    """
+    Compute the approximate optimal term for a given monthly repayment target
+    """
+    yr_dict = {}
+    above = None
+
+    for yr in range(max_years + 1, 0, -1):
+        obj = MortgagePaymentSchedule(interest_pct_annual=interest_pct_annual, term_years=yr, initial_amount=initial_amount)
+        yr_dict[yr] = obj.repayment
+    
+        if yr_dict[yr] > target_monthly_repayment:
+            above = yr
+            break
+        
+        below = yr
+
+    return below, above, yr_dict
